@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 
-const LocationAutocomplete = () => {
-  const [query, setQuery] = useState('');
+
+const LocationAutocomplete = ({onSelect}) => {
+  const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
 
   // Function to handle input changes
@@ -28,6 +29,7 @@ const LocationAutocomplete = () => {
   const handleSuggestionClick = (suggestion) => {
     setQuery(suggestion.display_name); // Set the selected suggestion in the input field
     setSuggestions([]); // Clear suggestions after selection
+    onSelect(suggestion.display_name); //Notify the parent
   };
 
   return (
