@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { db } from "../../service/firebaseConfig";
 import { toast } from "sonner";
 import { useParams } from "react-router-dom";
-import Info from "../components/info";
+import Info from "../components/Info";
 import Hotels from "../components/Hotels";
 import PlacesToVisit from "../components/PlacesToVisit";
 import Footer from "../components/Footer";
