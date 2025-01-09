@@ -8,7 +8,19 @@ export default defineConfig({
       "@": "/src",
     },
   },
+  build: {
+    rollupOptions: {
+      onwarn(warning, warn) {
+        if (warning.code === "UNRESOLVED_IMPORT") {
+          console.error("Unresolved import:", warning);
+          return;
+        }
+        warn(warning);
+      },
+    },
+  },
 });
 
 // git add .
-// 
+// git commit -m "completed my project"
+// git push origin main
