@@ -101,29 +101,47 @@ function CreateTrip() {
 
   const SaveAiTrip = async (TripData) => {
     try {
+      // Retrieve the user data from localStorage
       const user = JSON.parse(localStorage.getItem("user"));
+  
+      // Check if the user is logged in and has a valid email
+      if (!user || !user.email) {
+        toast.error("User is not logged in. Please sign in.");
+        return;
+      }
+  
+      // Generate a new document ID
       const docID = Date.now().toString();
-      const itineraryArray = Object.entries(JSON.parse(TripData).itinerary).map(
+  
+      // Ensure TripData contains valid itinerary and parse it
+      const parsedTripData = JSON.parse(TripData);
+      const itineraryArray = Object.entries(parsedTripData.itinerary || {}).map(
         ([day, plan]) => ({
           day,
           plan: Array.isArray(plan) ? plan : [plan],
         })
       );
+  
+      // Save the trip data to Firestore
       await setDoc(doc(db, "AITrips", docID), {
         Id: docID,
         userSelection: formData,
         tripData: {
-          ...JSON.parse(TripData),
+          ...parsedTripData,
           itinerary: itineraryArray,
         },
-        userEmail: user?.email,
+        userEmail: user.email, // Ensure user email is included
       });
+  
+      // Navigate to the view page after saving
       navigate("/view-trip/" + docID);
+  
     } catch (error) {
       console.error("Error saving trip to Firestore:", error);
       toast.error("Failed to save the trip. Please try again.");
     }
   };
+  
 
   return (
     <div className="sm:px-8 md:px-12 lg:px-20 xl:px-28 px-5 mt-10">
