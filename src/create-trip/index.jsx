@@ -103,10 +103,13 @@ function CreateTrip() {
     try {
       // Retrieve the user data from localStorage
       const user = JSON.parse(localStorage.getItem("user"));
+      
+      // Log the user data to check if it's being retrieved properly
+      console.log("User from localStorage:", user);
   
-      // Check if the user is logged in and has a valid email
+      // Check if the user object exists and contains email
       if (!user || !user.email) {
-        toast.error("User is not logged in. Please sign in.");
+        toast.error("User is not logged in or email is missing. Please sign in.");
         return;
       }
   
@@ -141,6 +144,7 @@ function CreateTrip() {
       toast.error("Failed to save the trip. Please try again.");
     }
   };
+  
   
 
   return (

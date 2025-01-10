@@ -62,17 +62,31 @@ function Header() {
       setLoading(true);
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
+  
+      // Check if user has email
+      if (!user.email) {
+        console.error("User email is missing!");
+        toast.error("Email is missing. Please try again.");
+        return;
+      }
+  
       setUser(user);
       console.log("Signed in user:", user);
       setOpenDialog(false);
-
+  
+      // Store user data in localStorage, including email
       localStorage.setItem("user", JSON.stringify(user));
+  
+      // Optionally, show success message or additional actions
+      toast.success(`Welcome, ${user.displayName}!`);
     } catch (error) {
       console.error("Error signing in:", error);
+      toast.error("Failed to sign in. Please try again.");
     } finally {
       setLoading(false);
     }
   };
+  
 
   const handleSignOut = async () => {
     try {
