@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom"; // Import Link and useNavigate
 import {
   Popover,
   PopoverContent,
@@ -14,8 +15,8 @@ import {
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 import { Button } from "../ui/button";
-import { googleLogout } from "@react-oauth/google";
 import { FcGoogle } from "react-icons/fc";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import firebaseConfig from "../../service/firebaseConfig";
 import { initializeApp } from "firebase/app";
 import {
@@ -25,13 +26,10 @@ import {
   signOut,
 } from "firebase/auth";
 import { getFirestore, doc, deleteDoc } from "firebase/firestore";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
-// Initialize Firestore
 const firestore = getFirestore(app);
 
 function Header() {
@@ -40,25 +38,23 @@ function Header() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-  // Use useEffect to check if a user is already signed in
   useEffect(() => {
     const savedUser = JSON.parse(localStorage.getItem("user"));
     if (savedUser) {
-      setUser(savedUser); // Set user from localStorage if available
+      setUser(savedUser);
     }
 
-    // Listen for auth state changes
     const unsubscribe = auth.onAuthStateChanged((authUser) => {
       if (authUser) {
-        setUser(authUser); // Set the user if they are signed in
-        localStorage.setItem("user", JSON.stringify(authUser)); // Save user info to localStorage
+        setUser(authUser);
+        localStorage.setItem("user", JSON.stringify(authUser));
       } else {
-        setUser(null); // Clear user if they are signed out
-        localStorage.removeItem("user"); // Remove user info from localStorage
+        setUser(null);
+        localStorage.removeItem("user");
       }
     });
 
-    return () => unsubscribe(); // Cleanup on component unmount
+    return () => unsubscribe();
   }, []);
 
   const signInWithGoogle = async () => {
@@ -68,10 +64,9 @@ function Header() {
       const user = result.user;
       setUser(user);
       console.log("Signed in user:", user);
-      setOpenDialog(false); // Close the dialog after successful sign-in
+      setOpenDialog(false);
 
-      localStorage.setItem("user", JSON.stringify(user)); // Save user to localStorage
-      navigate("/my-trips"); // Navigate to "my-trips"
+      localStorage.setItem("user", JSON.stringify(user));
     } catch (error) {
       console.error("Error signing in:", error);
     } finally {
@@ -87,14 +82,10 @@ function Header() {
 
       const userDocRef = doc(firestore, "AITrips", auth.currentUser.uid);
 
-      // Attempt to delete the user's document
       await deleteDoc(userDocRef);
       console.log("Document deleted successfully:", userDocRef.path);
 
-      // Sign out from Firebase Auth
       await signOut(auth);
-
-      // Clear local data
       localStorage.clear();
       setUser(null);
       console.log("User logged out successfully.");
@@ -109,7 +100,10 @@ function Header() {
 
   return (
     <div className="shadow-sm flex justify-between items-center py-3 px-3">
-      <img src="/logo.svg" />
+      {/* Wrap logo in Link to navigate to Hero page */}
+      <Link to="/">
+        <img src="/logo.svg" alt="Logo" className="cursor-pointer" />
+      </Link>
       <div>
         {user ? (
           <div className="flex items-center gap-5">
@@ -136,6 +130,7 @@ function Header() {
                 <img
                   src={user?.photoURL}
                   className="h-[35px] w-[35px] rounded-full items-center border-b-slate-800"
+                  alt="User"
                 />
               </PopoverTrigger>
               <PopoverContent>
@@ -165,7 +160,7 @@ function Header() {
               <VisuallyHidden>Sign in</VisuallyHidden>
             </DialogTitle>
             <DialogDescription>
-              <img src="/logo.svg" />
+              <img src="/logo.svg" alt="Logo" />
               <h2 className="font-bold text-lg mt-7">Sign in with Google</h2>
               <p>Sign in to the app with Google Authentication</p>
               <Button

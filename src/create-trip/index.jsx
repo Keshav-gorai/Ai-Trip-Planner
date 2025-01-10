@@ -45,7 +45,6 @@ function CreateTrip() {
     console.log(formData);
   }, [formData]);
 
-  // SAMPLE CODE FOR AUTHORIZATION
   const handleGoogleSignIn = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
@@ -53,13 +52,13 @@ function CreateTrip() {
       console.log("User signed in:", user);
       localStorage.setItem("user", JSON.stringify(user));
       toast.success(`Welcome ${user.displayName}`);
-      setOpenDialog(false); // Close the dialog after successful login
+      setOpenDialog(false);
     } catch (error) {
       console.error("Google sign-in error:", error);
       toast.error("Failed to sign in. Please try again.");
     }
   };
-  // SAMPLE CODE FOR THE DETAILS OF THE TRIP
+
   const OnGenerateTrip = async () => {
     const user = localStorage.getItem("user");
 
@@ -100,22 +99,22 @@ function CreateTrip() {
     }
   };
 
-  // SAMPLE CODE FOR SAVING THE DATA IN THE DATABASE
   const SaveAiTrip = async (TripData) => {
     try {
       const user = JSON.parse(localStorage.getItem("user"));
       const docID = Date.now().toString();
-      const itineraryArray = Object.entries(JSON.parse(TripData).itinerary).map(([day, plan]) => ({
-        day,
-        plan: Array.isArray(plan) ? plan : [plan],
-       
-      }));
+      const itineraryArray = Object.entries(JSON.parse(TripData).itinerary).map(
+        ([day, plan]) => ({
+          day,
+          plan: Array.isArray(plan) ? plan : [plan],
+        })
+      );
       await setDoc(doc(db, "AITrips", docID), {
         Id: docID,
         userSelection: formData,
         tripData: {
           ...JSON.parse(TripData),
-          itinerary: itineraryArray// Ensure itinerary is stored as an array
+          itinerary: itineraryArray,
         },
         userEmail: user?.email,
       });
@@ -126,20 +125,18 @@ function CreateTrip() {
     }
   };
 
-  // CODE FOR DESIGNING THE INTERFACE
-
   return (
-    <div className="sm:px-8 md:px-32 lg:px-52 xl:px-28 px-5 mt-10">
-      <h2 className="font-bold text-3xl">
+    <div className="sm:px-8 md:px-12 lg:px-20 xl:px-28 px-5 mt-10">
+      <h2 className="font-bold text-2xl sm:text-3xl md:text-4xl text-center">
         Tell me about your travel preferences 🏕️🌴
       </h2>
-      <p className="mt-5 text-green-700 text-xl">
+      <p className="mt-5 text-green-700 text-base sm:text-lg md:text-xl text-center">
         Just provide some basic information, and this trip planner app will
-        generate a customized itinerary based on your preferences
+        generate a customized itinerary based on your preferences.
       </p>
       <div>
-        <div className="mx-14 mt-14">
-          <h2 className="text-xl font-bold">
+        <div className="mx-4 sm:mx-8 lg:mx-14 mt-10">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-bold">
             Give a choice of your Destination!!
           </h2>
           <LocationAutocomplete
@@ -150,63 +147,60 @@ function CreateTrip() {
           />
         </div>
       </div>
-      <div className="mx-14 mt-5">
-        <h2 className="text-xl font-bold">
-          Mention the number of days, you are planning for the trip!!
+      <div className="mx-4 sm:mx-8 lg:mx-14 mt-5">
+        <h2 className="text-lg sm:text-xl md:text-2xl font-bold">
+          Mention the number of days you are planning for the trip!!
         </h2>
         <input
           type="number"
-          placeholder="Example:- 3"
-          className=" w-full p-2 mt-2 rounded-md border-2 border-slate-500"
+          placeholder="Example: 3"
+          className="w-full p-2 mt-2 rounded-md border-2 border-gray-300 focus:ring focus:ring-green-500"
           onChange={(e) => handleInputChange("noOfDays", e.target.value)}
         />
       </div>
-      <div className="mx-14 mt-16">
-        <h2 className="text-xl font-bold text-green-900">
+      <div className="mx-4 sm:mx-8 lg:mx-14 mt-8">
+        <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-green-900">
           Please mention your budget!! <br />
-          The budget is exclusively allocated for activities and dining
-          purposes.
+          The budget is exclusively allocated for activities and dining purposes.
         </h2>
       </div>
-      <div className="grid grid-cols-3 mx-14 mt-5 gap-5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 mx-4 sm:mx-8 lg:mx-14 mt-5 gap-5">
         {SelectBudgetOption.map((item, index) => (
           <div
             key={index}
-            className={`p-4 border rounded-lg hover:shadow-lg cursor-pointer
-                ${formData?.budget == item.title && "shadow-lg border-black"}
-                `}
+            className={`p-4 border rounded-lg hover:shadow-lg cursor-pointer ${
+              formData?.budget === item.title && "shadow-lg border-black"
+            }`}
             onClick={() => handleInputChange("budget", item.title)}
           >
-            <h2 className="text-4xl">{item.icon}</h2>
-            <h2 className="font-semibold text-lg">{item.title}</h2>
-            <h2 className="text-md text-gray-600">{item.desc}</h2>
+            <h2 className="text-3xl md:text-4xl">{item.icon}</h2>
+            <h2 className="font-semibold text-md md:text-lg">{item.title}</h2>
+            <h2 className="text-sm md:text-md text-gray-600">{item.desc}</h2>
           </div>
         ))}
       </div>
-      <div className="mx-14 mt-8">
-        <h2 className="text-xl font-bold text-green-900">
-          Who do you travelling with on your next adventurous Destination!!
+      <div className="mx-4 sm:mx-8 lg:mx-14 mt-8">
+        <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-green-900">
+          Who are you traveling with?
         </h2>
       </div>
-      <div className="grid grid-cols-4 mx-14 mt-5 gap-5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 mx-4 sm:mx-8 lg:mx-14 mt-5 gap-5">
         {SelectTravelsList.map((item, index) => (
           <div
             key={index}
-            className={`p-4 border rounded-lg hover:shadow-lg cursor-pointer
-                ${
-                  formData?.traveller == item.People && "shadow-lg border-black"
-                }
-                `}
+            className={`p-4 border rounded-lg hover:shadow-lg cursor-pointer ${
+              formData?.traveller === item.People && "shadow-lg border-black"
+            }`}
             onClick={() => handleInputChange("traveller", item.People)}
           >
-            <h2 className="text-4xl">{item.icon}</h2>
-            <h2 className="font-semibold text-lg">{item.title}</h2>
-            <h2 className="text-md text-gray-600">{item.desc}</h2>
+            <h2 className="text-3xl md:text-4xl">{item.icon}</h2>
+            <h2 className="font-semibold text-md md:text-lg">{item.title}</h2>
+            <h2 className="text-sm md:text-md text-gray-600">{item.desc}</h2>
           </div>
         ))}
       </div>
-      <div className="my-10 justify-end flex mx-14">
-        <Button diabled={loading} onClick={OnGenerateTrip}>
+      <div className="my-10 justify-end flex">
+        <Button disabled={loading} onClick={OnGenerateTrip}>
           {loading ? (
             <AiOutlineLoading3Quarters className="w-7 h-7 animate-spin" />
           ) : (
@@ -219,8 +213,8 @@ function CreateTrip() {
         <DialogContent>
           <DialogHeader>
             <DialogDescription>
-              <img src="/logo.svg" />
-              <h2 className="font-bold text-lg mt-7 ">Sign in with Google</h2>
+              <img src="/logo.svg" alt="Logo" />
+              <h2 className="font-bold text-lg mt-7">Sign in with Google</h2>
               <p>Sign in to the app with Google Authentication</p>
               <Button
                 disabled={loading}

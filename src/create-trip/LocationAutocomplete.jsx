@@ -39,7 +39,7 @@ const LocationAutocomplete = ({onSelect}) => {
         value={query}
         onChange={handleInputChange}
         placeholder="Search for a location"
-        className=' w-full p-2 mt-2 rounded-md border-2 border-slate-500'
+        className=' w-full p-2 mt-2 rounded-md border-2 focus:ring focus:ring-green-500 border-gray-300'
       />
       {suggestions.length > 0 && (
         <ul className='cursor-pointer'>
