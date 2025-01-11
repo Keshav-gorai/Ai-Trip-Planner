@@ -1,15 +1,26 @@
 import React, { useState } from "react";
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
+import {
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider,
+  signOut,
+} from "firebase/auth";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+} from "firebase/firestore";
 import firebaseConfig from "./firebaseConfig";
 
 // Initialize Firebase
-initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const firestore = getFirestore(app);
+const provider = new GoogleAuthProvider();
 
 const GoogleAuth = () => {
   const [user, setUser] = useState(null);
-  const auth = getAuth();
-  const provider = new GoogleAuthProvider();
 
   // Function to handle Google Sign-In
   const signInWithGoogle = async () => {
@@ -17,7 +28,18 @@ const GoogleAuth = () => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       setUser(user);
+
       console.log("Signed in user:", user);
+
+      // Save the user's email to Firestore
+      await setDoc(doc(firestore, "users", user.uid), {
+        displayName: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL,
+        uid: user.uid,
+      });
+
+      console.log("User email stored in Firestore successfully.");
     } catch (error) {
       console.error("Error signing in:", error);
     }
@@ -40,7 +62,11 @@ const GoogleAuth = () => {
       {user ? (
         <div>
           <h2>Welcome, {user.displayName}</h2>
-          <img src={user.photoURL} alt={user.displayName} style={{ borderRadius: "50%" }} />
+          <img
+            src={user.photoURL}
+            alt={user.displayName}
+            style={{ borderRadius: "50%" }}
+          />
           <p>Email: {user.email}</p>
           <button onClick={handleSignOut}>Sign Out</button>
         </div>
@@ -52,4 +78,3 @@ const GoogleAuth = () => {
 };
 
 export default GoogleAuth;
-
